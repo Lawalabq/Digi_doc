@@ -1,0 +1,19 @@
+<form method="post" action="{% url 'login' %}">
+  {% csrf_token %}
+  <h2>Login</h2>
+  <label for="id_username">Username:</label>
+  <input type="text" name="username" id="id_username" required />
+  <br />
+  <label for="id_password">Password:</label>
+  <input type="password" name="password" id="id_password" required />
+  <br />
+  <button type="submit">Login</button>
+</form>
+<div style="display: flex; gap: 10px; margin-top: 15px">
+  <form action="{% url 'signup' %}" method="get" style="margin: 0">
+    <a> <button>Create Account</button></a>
+  </form>
+  <form action="{% url 'password_reset' %}" method="get" style="margin: 0">
+    <a><button>Change Password</button></a>
+  </form>
+</div>
