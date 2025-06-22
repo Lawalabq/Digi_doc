@@ -1,26 +1,33 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
-
-# Create your models here.
+from django.contrib.auth.models import AbstractUser, UserManager
 
 
 class User(AbstractUser):
     ROLE_CHOICES = (
         ('staff', 'Staff'),
         ('nurse', 'Nurse'),
-        ('school', 'School'),
     )
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     full_name = models.CharField(max_length=30)
     email = models.EmailField()
+    objects = UserManager()
 
 
 class School(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
     address = models.CharField(max_length=100)
+    name = models.CharField(max_length=20)
 
 
 class Nurse(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    school = models.ForeignKey(
+        School, on_delete=models.CASCADE, related_name='nurses')
+
+
+class Staff(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     school = models.OneToOneField(School, on_delete=models.CASCADE)

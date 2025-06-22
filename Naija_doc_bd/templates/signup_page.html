@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sign Up</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h2>Sign Up</h2>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="id_username" class="form-label">Username</label>
+          <input
+            type="text"
+            name="username"
+            maxlength="150"
+            autofocus
+            required
+            class="form-control"
+            id="id_username"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="id_email" class="form-label">Email</label>
+          <input
+            type="email"
+            name="email"
+            required
+            class="form-control"
+            id="id_email"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="id_role" class="form-label">Role</label>
+          <select name="role" id="id_role" class="form-select" required>
+            <option value="" selected disabled>Select your role</option>
+            <option value="Staff">Staff</option>
+            <option value="Nurse">Nurse</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="id_school" class="form-label">School</label>
+          <select name="school" id="id_school" class="form-select" required>
+            <option value="" selected disabled>Select your school</option>
+            {% for school in schools %}
+            <option value="{{school.id}}">{{ school.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="id_password1" class="form-label">Password</label>
+          <input
+            type="password"
+            name="password1"
+            required
+            class="form-control"
+            id="id_password1"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="id_password2" class="form-label">Confirm Password</label>
+          <input
+            type="password"
+            name="password2"
+            required
+            class="form-control"
+            id="id_password2"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Sign Up</button>
+      </form>
+    </div>
+  </body>
+</html>
