@@ -2,8 +2,13 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 import os
-from .models import Staff, Nurse, School
+from .models import Staff, Nurse, School, Drug, Case, MedicationRecord
+
 from django.contrib.auth import get_user_model
+from django.views.generic.edit import CreateView
+from .models import Student
+from django.urls import reverse_lazy
+from django.utils import timezone
 
 User = get_user_model()
 UserModel = get_user_model()
@@ -84,3 +89,57 @@ def nursehomeView(request):
     context = {}
     context['user'] = request.user
     return render(request, 'nurse_home.html', context)
+
+
+def StudentCreateView(request):
+    if request.method == 'POST':
+
+        name = request.POST.get('name')
+        medical_history = request.POST.get('medical_history')
+        age = request.POST.get('age')
+        sex = request.POST.get('sex')
+        state = request.POST.get('state')
+        nurse = Nurse.objects.get(user_id=int(request.user.id))
+        school = School.objects.get(id=int(nurse.school_id))
+        student = Student(name=name, medical_history=medical_history,
+                          age=age, sex=sex, state=state, school=school)
+        student.save()
+        return redirect('nurse_home')
+
+    context = {}
+    return render(request, 'student_form.html', context)
+
+
+def CreatecaseView(request):
+    if request.method == 'POST':
+        notes = request.POST.get('notes')
+        student_id = request.POST.get('student')
+        student = Student.objects.get(id=student_id)
+        date = timezone.now()
+        case = Case(diagnosis=notes, date=date, student=student)
+        case.save()
+
+        total_forms = int(request.POST.get('medication-TOTAL_FORMS', 0))
+        for i in range(total_forms):
+            drug_id = request.POST.get(f'medication-{i}-drug')
+            morning = request.POST.get(f'medication-{i}-morning') == 'on'
+            afternoon = request.POST.get(f'medication-{i}-afternoon') == 'on'
+            night = request.POST.get(f'medication-{i}-night') == 'on'
+            days = request.POST.get(f'medication-{i}-days')
+
+            # Only save if a drug is selected
+            if drug_id:
+                # Create MedicationRecord for this case
+                MedicationRecord.objects.create(
+                    case=case,  # replace with your created case object
+                    drug_id=drug_id,
+                    morning=morning,
+                    afternoon=afternoon,
+                    night=night,
+                    days=days
+                )
+
+    context = {}
+    context['students'] = Student.objects.all()
+    context['drugs'] = Drug.objects.all()
+    return render(request, 'create_case.html', context)

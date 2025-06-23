@@ -45,6 +45,11 @@ class Student(models.Model):
     )
     sex = models.CharField(max_length=10, choices=ROLE_CHOICES)
     state = models.CharField(max_length=20)
+    class_CHOICES = (
+        ('SSS1', 'SSS1'),
+        ('SSS2', 'SSS2'),
+        ('SSS3', 'SSS3'))
+    level = models.CharField(max_length=10, choices=class_CHOICES)
 
 
 class Drug(models.Model):
@@ -52,8 +57,17 @@ class Drug(models.Model):
     description = models.CharField(max_length=100)
 
 
-class case(models.Model):
-    student = models.OneToOneField(Student, on_delete=models.CASCADE)
+class Case(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
     diagnosis = models.CharField(max_length=100)
     date = models.DateTimeField(auto_now_add=True)
-    medications = {}
+
+
+class MedicationRecord(models.Model):
+    case = models.ForeignKey(
+        'case', on_delete=models.CASCADE, related_name='medication_records')
+    drug = models.ForeignKey(Drug, on_delete=models.CASCADE)
+    morning = models.BooleanField(default=False)
+    afternoon = models.BooleanField(default=False)
+    night = models.BooleanField(default=False)
+    days = models.PositiveIntegerField()

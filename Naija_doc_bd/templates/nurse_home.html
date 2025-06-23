@@ -27,10 +27,12 @@
               <a class="nav-link active" href="{% url 'nurse_home' %}">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="">Add Case</a>
+              <a class="nav-link" href="{% url 'create_case' %}">Add Case</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="">Add Student</a>
+              <a class="nav-link" href="{% url 'create_student' %}"
+                >Add Student</a
+              >
             </li>
             <li class="nav-item">
               <a class="nav-link" href="">Dispense</a>
@@ -55,8 +57,13 @@
       </div>
 
       <div class="mb-3">
-        <a href="" class="btn btn-success w-100 mb-2">Create New Case</a>
-        <a href="" class="btn btn-secondary w-100">Create New Student</a>
+        <a href="{% url 'create_case' %}" class="btn btn-success w-100 mb-2"
+          >Create New Case</a
+        >
+        <a href="{% url 'create_student' %}" class="btn btn-secondary w-100"
+          >Create New Student</a
+        >
+        >
       </div>
     </div>
 
