@@ -1,3 +1,35 @@
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Naija Doc</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link active" href="{% url 'nurse_home' %}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'create_case' %}">Add Case</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'create_student' %}">Add Student</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="">Dispense</a>
+        </li>
+      </ul>
+      <span class="navbar-text ms-auto"> {{ user.username }} </span>
+    </div>
+  </div>
+</nav>
+
 <h2 class="mb-4">Create Case</h2>
 <form method="post" class="container">
   {% csrf_token %}
@@ -96,10 +128,6 @@
       >
         Remove
       </button>
-      <input type="hidden" name="medication-TOTAL_FORMS" value="1" />
-      <input type="hidden" name="medication-INITIAL_FORMS" value="0" />
-      <input type="hidden" name="medication-MIN_NUM_FORMS" value="0" />
-      <input type="hidden" name="medication-MAX_NUM_FORMS" value="1000" />
     </div>
   </div>
   <button
@@ -109,7 +137,12 @@
   >
     Add Medication
   </button>
+
   <br />
+  <input type="hidden" name="medication-TOTAL_FORMS" value="1" />
+  <input type="hidden" name="medication-INITIAL_FORMS" value="0" />
+  <input type="hidden" name="medication-MIN_NUM_FORMS" value="0" />
+  <input type="hidden" name="medication-MAX_NUM_FORMS" value="1000" />
   <button type="submit" class="btn btn-success">Submit</button>
 </form>
 
@@ -143,6 +176,17 @@
 </style>
 
 <script>
+  // Navbar toggler for Bootstrap 5
+  document.addEventListener('DOMContentLoaded', function () {
+    var toggler = document.querySelector('.navbar-toggler');
+    var navCollapse = document.getElementById('navbarNav');
+    if (toggler && navCollapse) {
+      toggler.addEventListener('click', function () {
+        navCollapse.classList.toggle('show');
+      });
+    }
+  });
+
   const students = [
     {% for student in students %}
       {
@@ -213,7 +257,8 @@
       `-${currentFormCount}-`
     );
     medicationsDiv.appendChild(emptyForm);
-    totalForms.value = currentFormCount + 1;
+    totalForms.value = parseInt(totalForms.value)  + 1;
+    console.log(totalForms.value)
   });
 
   // Remove medication form

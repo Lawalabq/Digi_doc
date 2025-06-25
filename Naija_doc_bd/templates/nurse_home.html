@@ -52,7 +52,9 @@
           <div>
             <h4 class="card-title mb-0">Active Cases</h4>
           </div>
-          <a href="" class="btn btn-outline-primary">View Active Cases</a>
+          <a href="{% url 'view_activecases' %}" class="btn btn-outline-primary"
+            >View Active Cases</a
+          >
         </div>
       </div>
 
@@ -62,7 +64,6 @@
         >
         <a href="{% url 'create_student' %}" class="btn btn-secondary w-100"
           >Create New Student</a
-        >
         >
       </div>
     </div>

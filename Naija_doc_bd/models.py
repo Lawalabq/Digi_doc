@@ -34,7 +34,7 @@ class Staff(models.Model):
 
 
 class Student(models.Model):
-    school = models.OneToOneField(School, on_delete=models.CASCADE)
+    school = models.ForeignKey(School, on_delete=models.CASCADE)
     name = models.CharField(max_length=10)
     medical_history = models.CharField(max_length=200)
     age = models.IntegerField()

@@ -101,8 +101,9 @@ def StudentCreateView(request):
         state = request.POST.get('state')
         nurse = Nurse.objects.get(user_id=int(request.user.id))
         school = School.objects.get(id=int(nurse.school_id))
+        level = request.POST.get('level')
         student = Student(name=name, medical_history=medical_history,
-                          age=age, sex=sex, state=state, school=school)
+                          age=age, sex=sex, state=state, school=school, level=level)
         student.save()
         return redirect('nurse_home')
 
@@ -119,7 +120,7 @@ def CreatecaseView(request):
         case = Case(diagnosis=notes, date=date, student=student)
         case.save()
 
-        total_forms = int(request.POST.get('medication-TOTAL_FORMS', 0))
+        total_forms = int(request.POST.get('medication-TOTAL_FORMS'))
         for i in range(total_forms):
             drug_id = request.POST.get(f'medication-{i}-drug')
             morning = request.POST.get(f'medication-{i}-morning') == 'on'
@@ -143,3 +144,8 @@ def CreatecaseView(request):
     context['students'] = Student.objects.all()
     context['drugs'] = Drug.objects.all()
     return render(request, 'create_case.html', context)
+
+
+def ActivecaseView(request):
+    context = {}
+    return render(request, 'view_activecases.html', context)
