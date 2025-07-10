@@ -147,5 +147,16 @@ def CreatecaseView(request):
 
 
 def ActivecaseView(request):
-    context = {}
+    cases = Case.objects.filter(is_active=True)
+    students = Student.objects.filter(
+        id__in=cases.values_list('student_id', flat=True)).distinct()
+    case_medications = {}
+    for case in cases:
+        medications = MedicationRecord.objects.filter(case=case)
+        case_medications[case] = list(medications)
+    context = {
+        'cases': cases,
+        'students': students,
+        'case_medications': case_medications
+    }
     return render(request, 'view_activecases.html', context)

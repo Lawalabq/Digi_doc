@@ -61,6 +61,7 @@ class Case(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     diagnosis = models.CharField(max_length=100)
     date = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
 
 class MedicationRecord(models.Model):
