@@ -25,7 +25,9 @@ urlpatterns = [
     path('addstudent', StudentCreateView, name='create_student'),
     path('addcase', CreatecaseView, name='create_case'),
     path('activecases', ActivecaseView, name='view_activecases'),
-    path('case/<pk>', ActivecaseView, name='case_detail')
+
+    path('activecases/<int:case_id>/', ActivecaseView, name='view_activecases'),
+   
 
 
 ]

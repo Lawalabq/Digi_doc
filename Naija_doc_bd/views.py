@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 import os
-from .models import Staff, Nurse, School, Drug, Case, MedicationRecord
+from .models import Staff, Nurse, School, Drug, Case, MedicationRecord, MedicationDispense
 
 from django.contrib.auth import get_user_model
 from django.views.generic.edit import CreateView
@@ -146,17 +146,40 @@ def CreatecaseView(request):
     return render(request, 'create_case.html', context)
 
 
-def ActivecaseView(request):
+def ActivecaseView(request,case_id=None):
+    if request.method == 'POST':
+        medication_record_id = request.POST.get('medication_record_id')
+        dose_time = request.POST.get('dose_time')
+        notes = request.POST.get('notes', '')
+        medication_record = MedicationRecord.objects.get(id=medication_record_id)
+        student = medication_record.case.student
+        MedicationDispense.objects.create(
+            medication_record=medication_record,
+            student=student,
+            dispensed_by=request.user,
+            dose_time=dose_time,
+            notes=notes
+        )
+        messages.success(request, 'Medication dispensed successfully.')
+        return redirect('view_activecases')
+    if case_id:
+        cases = Case.objects.filter(id=case_id, is_active=True)
+        if cases.exists():
+            case = cases.first()
+            messages.info(request, f"Case Info: Diagnosis - {case.diagnosis}, Date - {case.date}, Student - {case.student.name}")
+            return redirect('view_activecases')
+
+
     cases = Case.objects.filter(is_active=True)
     students = Student.objects.filter(
         id__in=cases.values_list('student_id', flat=True)).distinct()
-    case_medications = {}
     for case in cases:
         medications = MedicationRecord.objects.filter(case=case)
-        case_medications[case] = list(medications)
+        dispenses = MedicationDispense.objects.filter(medication_record__in=medications)
+        case.medications = list(medications)
+        case.dispenses = list(dispenses)
     context = {
         'cases': cases,
         'students': students,
-        'case_medications': case_medications
     }
     return render(request, 'view_activecases.html', context)

@@ -72,3 +72,16 @@ class MedicationRecord(models.Model):
     afternoon = models.BooleanField(default=False)
     night = models.BooleanField(default=False)
     days = models.PositiveIntegerField()
+
+
+class MedicationDispense(models.Model):
+    medication_record = models.ForeignKey(MedicationRecord, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    dispensed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    date_time = models.DateTimeField(auto_now_add=True)
+    dose_time = models.CharField(max_length=10, choices=[
+        ('morning', 'Morning'),
+        ('afternoon', 'Afternoon'),
+        ('night', 'Night')
+    ])
+    notes = models.CharField(max_length=200, blank=True)

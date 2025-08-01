@@ -44,7 +44,52 @@
       }
     </style>
   </head>
+
   <body>
+
+     <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Naija Doc</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="{% url 'nurse_home' %}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'create_case' %}">Add Case</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'create_student' %}"
+                >Add Student</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="">Dispense</a>
+            </li>
+          </ul>
+          <span class="navbar-text ms-auto"> {{ user.username }} </span>
+        </div>
+      </div>
+    </nav>
+    {% if messages %}
+      <div class="container mt-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
     <div class="container mt-5">
       <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -64,55 +109,91 @@
             {% for case in cases %}
             <div class="card shadow-sm">
               <div class="card-body case-card">
-              <div class="case-info">
-                <h5 class="card-title mb-2">{{ case.student.name }}</h5>
-                <div>
-                <strong>Meds to Dispense:</strong>
-                <ul class="med-list mt-2">
-                  {% for med in case.medicationrecord_set.all %}
-                  <li class="med-item">
-                    {{ med.drug.name }} ({{ med.days }} days
-                    {% if med.morning %}, Morning{% endif %}
-                    {% if med.afternoon %}, Afternoon{% endif %}
-                    {% if med.night %}, Night{% endif %})
-                  </li>
-                  {% empty %}
-                  <li class="med-item">No medications</li>
-                  {% endfor %}
-                </ul>
-                </div>
-              </div>
-              <div class="case-actions">
-                <a href="{% url 'case_detail' case.id %}" class="btn btn-info"
-                >More Info</a
-                >
-              </div>
-              </div>
-            </div>
-            {% empty %}
-            <div class="alert alert-warning text-center">No cases found.</div>
-            {% endfor %}
+                <div class="case-info">
+                  <h5 class="card-title mb-2">{{ case.student.name }}</h5>
+                  <div>
+                    <strong>Meds to Dispense:</strong>
+                    <ul class="med-list mt-2">
+                      {% for med in case.medications %}
                       <li class="med-item">
                         {{ med.drug.name }} ({{ med.days }} days
                         {% if med.morning %}, Morning{% endif %}
                         {% if med.afternoon %}, Afternoon{% endif %}
                         {% if med.night %}, Night{% endif %})
+                        <!-- Dispense Form -->
+                        <form
+                          method="post"
+                          class="mt-2 d-flex flex-wrap align-items-center"
+                        >
+                          {% csrf_token %}
+                          <input
+                            type="hidden"
+                            name="medication_record_id"
+                            value="{{ med.id }}"
+                          />
+                          <select
+                            name="dose_time"
+                            required
+                            class="form-select me-2"
+                            style="width: 120px"
+                          >
+                            {% if med.morning %}
+                            <option value="morning">Morning</option>
+                            {% endif %}
+                            {% if med.afternoon %}
+                            <option value="afternoon">Afternoon</option>
+                            {% endif %}
+                            {% if med.night %}
+                            <option value="night">Night</option>
+                            {% endif %}
+                          </select>
+                          <input
+                            type="text"
+                            name="notes"
+                            placeholder="Notes"
+                            class="form-control me-2"
+                            style="width: 150px"
+                          />
+                          <button
+                            type="submit"
+                            class="btn btn-success btn-sm"
+                          >
+                            Dispense
+                          </button>
+                        </form>
+                        <!-- Dispense History -->
+                        <ul class="mt-1">
+                          {% for dispense in case.dispenses %}
+                            {% if dispense.medication_record.id == med.id %}
+                              <li style="font-size: 0.9em;">
+                                {{ dispense.dose_time|title }} dispensed by
+                                {{ dispense.dispensed_by.full_name|default:dispense.dispensed_by.username }}
+                                at {{ dispense.date_time|date:"Y-m-d H:i" }}
+                                {% if dispense.notes %}- {{ dispense.notes }}{% endif %}
+                              </li>
+                            {% endif %}
+                          {% endfor %}
+                        </ul>
                       </li>
-      
+                      {% empty %}
                       <li class="med-item">No medications</li>
                       {% endfor %}
                     </ul>
                   </div>
                 </div>
                 <div class="case-actions">
-                  <a href="{% url 'case_detail' case.id %}" class="btn btn-info"
-                    >More Info</a
+                  <a
+                    href="{% url 'view_activecases' case.id %}"
+                    class="btn btn-info"
                   >
+                    More Info
+                  </a>
                 </div>
               </div>
             </div>
-          
+            {% empty %}
             <div class="alert alert-warning text-center">No cases found.</div>
+            {% endfor %}
           </div>
         </div>
       </div>
